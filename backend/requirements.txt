@@ -3,3 +3,6 @@ djangorestframework
 django-cors-headers
 pypdf
 python-docx
+whitenoise
+uvicorn
+gunicorn
