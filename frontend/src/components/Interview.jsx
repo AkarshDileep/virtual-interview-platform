@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import VirtualInterviewer, { MinimalAvatarLoader } from './VirtualInterviewer';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 import { AVATAR_OPTIONS, selectVoiceForAvatar } from './avatarOptions';
 
 const Interview = () => {
@@ -138,7 +139,7 @@ const Interview = () => {
     formData.append('resume', resume);
     formData.append('job_description', jobDescription);
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/generate-interview/', formData);
+      const response = await axios.post(`${API_BASE_URL}/generate-interview/`, formData);
       setQuestions(response.data.questions);
       setSecondsLeft((response.data.questions.length || 15) * 120);
     } catch (requestError) {
@@ -179,7 +180,7 @@ const Interview = () => {
     }
     setIsEvaluating(true);
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/evaluate-interview/', {
+      const response = await axios.post(`${API_BASE_URL}/evaluate-interview/`, {
         questions: questions.map(question => ({ text: question.text, ideal_answer: question.ideal_answer })),
         answers: nextAnswers,
       });

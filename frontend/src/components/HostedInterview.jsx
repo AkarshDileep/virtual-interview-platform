@@ -3,8 +3,7 @@ import axios from 'axios';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import VirtualInterviewer from './VirtualInterviewer';
 import { AVATAR_OPTIONS, selectVoiceForAvatar } from './avatarOptions';
-
-const API = 'http://127.0.0.1:8000/api';
+import { API_BASE_URL as API } from '../config';
 
 const DURATION_PRESETS = [15, 30, 45, 60];
 const QUESTION_TEMPLATES = [

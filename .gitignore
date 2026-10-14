@@ -1,6 +1,7 @@
 # Environments
 .env
 .env.*
+!.env.example
 backend/.env
 venv/
 env/
