@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Virtual Interview Pro — Interactive Presentation PPT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #080b14;
+      --card-bg: rgba(17, 24, 39, 0.75);
+      --card-border: rgba(99, 102, 241, 0.25);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #a855f7;
+      --cyan: #14b8a6;
+      --gold: #f59e0b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, rgba(30, 27, 75, 0.7) 0%, rgba(10, 14, 26, 0.98) 80%), #080b14;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* Top Bar */
+    header {
+      height: 60px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #a5b4fc;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.3px;
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-icon {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      color: #cbd5e1;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-icon:hover {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: rgba(99, 102, 241, 0.5);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .btn-icon.active {
+      background: rgba(99, 102, 241, 0.4);
+      border-color: #818cf8;
+      color: #ffffff;
+    }
+
+    .btn-download {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      border: 1px solid rgba(167, 139, 250, 0.4);
+      color: #ffffff;
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-download:hover {
+      background: linear-gradient(135deg, #6366f1, #9333ea);
+      transform: translateY(-1px);
+    }
+
+    /* Progress bar */
+    .progress-line {
+      height: 2px;
+      background: linear-gradient(90deg, #6366f1, #a855f7, #14b8a6);
+      width: 8.33%;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
+    }
+
+    /* Viewport */
+    main {
+      flex: 1;
+      padding: 24px 44px;
+      overflow-y: auto;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      max-width: 1300px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 36px 44px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      animation: fadeIn 0.35s ease forwards;
+    }
+
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .slide-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: #818cf8;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .slide-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.25;
+      margin-bottom: 6px;
+    }
+
+    .slide-subtitle {
+      font-size: 14.5px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 16px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .card.blue { border-color: rgba(99, 102, 241, 0.45); background: linear-gradient(145deg, rgba(30, 27, 75, 0.5), rgba(15, 23, 42, 0.65)); }
+    .card.purple { border-color: rgba(168, 85, 247, 0.45); background: linear-gradient(145deg, rgba(59, 7, 100, 0.4), rgba(15, 23, 42, 0.65)); }
+    .card.cyan { border-color: rgba(20, 184, 166, 0.45); background: linear-gradient(145deg, rgba(4, 47, 46, 0.4), rgba(15, 23, 42, 0.65)); }
+    .card.gold { border-color: rgba(245, 158, 11, 0.45); background: linear-gradient(145deg, rgba(69, 26, 3, 0.4), rgba(15, 23, 42, 0.65)); }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .card-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    .list li {
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .list li::before {
+      content: '▹';
+      position: absolute;
+      left: 0;
+      color: #818cf8;
+      font-weight: bold;
+    }
+
+    .list strong {
+      color: #ffffff;
+    }
+
+    /* Voice Tester Button inside Cards */
+    .btn-voice-test {
+      margin-top: 14px;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #a5b4fc;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      align-self: flex-start;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn-voice-test:hover {
+      background: #4f46e5;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 8px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+
+    th {
+      background: rgba(30, 41, 65, 0.8);
+      padding: 12px 16px;
+      font-weight: 700;
+      color: #818cf8;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      text-align: left;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      color: #cbd5e1;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(99, 102, 241, 0.08); }
+
+    /* Bottom Bar */
+    footer {
+      height: 64px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(99, 102, 241, 0.2);
+      z-index: 50;
+    }
+
+    .slide-counter {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .slide-counter strong {
+      color: #ffffff;
+      font-size: 15px;
+    }
+
+    .nav-arrows {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-arrow {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-arrow:hover:not(:disabled) {
+      background: #6366f1;
+      border-color: #818cf8;
+      transform: scale(1.05);
+    }
+
+    .nav-arrow:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .hint {
+      font-size: 11.5px;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .key {
+      padding: 2px 6px;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #cbd5e1;
+    }
+
+    /* Speaker Notes Drawer */
+    #notes-drawer {
+      display: none;
+      position: absolute;
+      bottom: 64px;
+      left: 24px;
+      right: 24px;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid #818cf8;
+      border-radius: 14px 14px 0 0;
+      padding: 16px 24px;
+      z-index: 45;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    #notes-drawer.open {
+      display: block;
+    }
+
+    /* Overview Modal */
+    #overview-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 11, 20, 0.94);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+      padding: 32px 48px;
+      flex-direction: column;
+    }
+
+    #overview-modal.open {
+      display: flex;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+      overflow-y: auto;
+    }
+
+    .thumb-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 120px;
+      transition: all 0.2s ease;
+    }
+
+    .thumb-card:hover {
+      border-color: #818cf8;
+      background: rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .thumb-card.active {
+      border-color: #38bdf8;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header>
+    <div class="brand">
+      <div class="pill-badge">
+        <span class="dot"></span>
+        <span>Interactive Slide Deck</span>
+      </div>
+      <span class="brand-title">Virtual Interview Pro</span>
+    </div>
+
+    <div class="top-controls">
+      <button class="btn-icon" id="btn-play" onclick="toggleAutoPlay()">▶ Auto-Play</button>
+      <button class="btn-icon" id="btn-notes" onclick="toggleNotes()">📝 Speaker Notes</button>
+      <button class="btn-icon" onclick="toggleOverview()">⊞ Grid Overview</button>
+      <button class="btn-icon" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+      <a href="Virtual_Interview_Pro_Presentation.pptx" download="Virtual_Interview_Pro_Presentation.pptx" class="btn-download">
+        ⬇ Download PPTX
+      </a>
+    </div>
+  </header>
+
+  <div class="progress-line" id="progress-line"></div>
+
+  <!-- Viewport -->
+  <main>
+    <!-- SLIDE 1 -->
+    <div class="slide active" data-notes="Welcome everyone! Today we are thrilled to present Virtual Interview Pro: an intelligent, interactive 3D virtual interview platform combining spatial presence, procedural lip-sync, and multi-LLM intelligence.">
+      <div class="slide-tag">// PROJECT INTRODUCTION</div>
+      <h1 class="slide-title">🎙️ Virtual Interview Pro</h1>
+      <p class="slide-subtitle">Next-Generation Autonomous 3D AI Interview Simulation & Evaluation Platform</p>
+      
+      <div class="grid-2" style="margin-top: 10px;">
+        <div>
+          <p style="font-size: 15px; line-height: 1.6; color: #cbd5e1; margin-bottom: 20px;">
+            Virtual Interview Pro transforms stressful, high-friction technical screening into an immersive, high-fidelity conversational simulation. Built with Three.js, React, and Django, it features 3 distinct photorealistic avatars with procedural lip-sync, real-time voice speech-to-text, and multi-LLM automated candidate evaluation.
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="background: rgba(30, 41, 59, 0.45); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.25);">
+              <strong style="color: #ffffff;">🎭 3 Photorealistic 3D Avatars:</strong>
+              <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">Lead Tech Interviewer, Facial Animation Specialist & Google CEO Sundar Pichai.</div>
+            </div>
+            <div style="background: rgba(30, 41, 59, 0.45); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.25);">
+              <strong style="color: #ffffff;">👄 Procedural Viseme Lip-Sync:</strong>
+              <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">Trigonometric syllable modeling driving mouth morph targets and jaw bone rotation with zero lag.</div>
+            </div>
+            <div style="background: rgba(30, 41, 59, 0.45); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.25);">
+              <strong style="color: #ffffff;">🏢 Enterprise Recruiter Studio:</strong>
+              <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">Shareable cryptographic candidate tokens, 8s live telemetry polling, and 1-click CSV grading export.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="card blue" style="text-align: center; padding: 24px;">
+            <div style="font-size: 40px; font-weight: 800; color: #a5b4fc;">3 Avatars</div>
+            <div style="font-size: 14px; font-weight: 700; color: #ffffff;">Complete 3D Mesh Rigging</div>
+            <div style="font-size: 11.5px; color: var(--muted); margin-top: 4px;">Three.js, React Three Fiber & Viseme Blendshapes</div>
+          </div>
+          <div class="card purple" style="text-align: center; padding: 24px;">
+            <div style="font-size: 40px; font-weight: 800; color: #d8b4fe;">15 Questions</div>
+            <div style="font-size: 14px; font-weight: 700; color: #ffffff;">Synthesized Role-Specific Inquiries</div>
+            <div style="font-size: 11.5px; color: var(--muted); margin-top: 4px;">Dynamically grounded in Resume (PDF/DOCX) & Job Description</div>
+          </div>
+          <div class="card cyan" style="text-align: center; padding: 24px;">
+            <div style="font-size: 40px; font-weight: 800; color: #5eead4;">6-Tier Cascade</div>
+            <div style="font-size: 14px; font-weight: 700; color: #ffffff;">Multi-LLM Failover Architecture</div>
+            <div style="font-size: 11.5px; color: var(--muted); margin-top: 4px;">GPT-4o, Gemini 2.0, Claude 3.5, Llama 3.3, Mistral, Qwen</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide" data-notes="Traditional technical screening is exhausted. Engineers spend dozens of hours doing repetitive screens, leading to burnout and subjective grading. Candidates struggle with nerve-wracking verbal communication.">
+      <div class="slide-tag">// PROBLEM & SOLUTION</div>
+      <h1 class="slide-title">Overcoming Interview Friction</h1>
+      <p class="slide-subtitle">Bridging the critical gap between static text chatbots and high-stakes human interviews.</p>
+      
+      <div class="grid-2">
+        <div class="card" style="border-color: rgba(239, 68, 68, 0.4);">
+          <div class="card-header">
+            <div class="card-icon" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #f87171;">⚠️</div>
+            <div>
+              <div class="card-title">Traditional Interview Bottlenecks</div>
+              <div class="card-sub">Recruitment Challenges</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li><strong>Severe Recruiter Fatigue:</strong> Senior engineers spend 40+ hours per month repeating initial screening conversations.</li>
+            <li><strong>Subjectivity & Inconsistent Rubrics:</strong> Human interviewers vary drastically based on mood, energy, and unconscious bias.</li>
+            <li><strong>Candidate Anxiety:</strong> Candidates lack realistic, low-stakes environments to practice articulating code and architecture out loud.</li>
+            <li><strong>Text Chatbots Are Inadequate:</strong> Text-only LLMs do not simulate eye contact, speaking pace, or verbal pressure.</li>
+          </ul>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-header">
+            <div class="card-icon">✨</div>
+            <div>
+              <div class="card-title">Virtual Interview Pro Solution</div>
+              <div class="card-sub">Autonomous AI Spatial Pipeline</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li><strong>Lifelike 3D Spatial Presence:</strong> Real-time 3D avatars with eye contact tracking, blinking, nodding, and greeting waving.</li>
+            <li><strong>Dynamic Resume Grounding:</strong> Ingests candidate resumes (PDF/DOCX) to synthesize 15 grounded, factual questions.</li>
+            <li><strong>Granular 0-10 Rubric:</strong> Multi-vector grading across correctness, relevance, completeness, and clarity.</li>
+            <li><strong>Dual-Mode Studio:</strong> Supports solo candidate practice and multi-candidate enterprise hiring campaigns with CSV telemetry.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide" data-notes="Our flagship highlight: 3 distinct 3D avatars. The Lead Tech Interviewer with a deep baritone voice, the Facial Animation Specialist with 52 blendshapes, and the Google CEO Sundar Pichai avatar with calm Indian-English cadence. Click the Voice Test buttons to hear them!">
+      <div class="slide-tag">// 3D AVATAR ECOSYSTEM</div>
+      <h1 class="slide-title">🎭 The 3 Distinct 3D AI Interviewers</h1>
+      <p class="slide-subtitle">Calibrated skeletal bone rigs, voice profiles, facial blendshapes, and character traits.</p>
+      
+      <div class="grid-3">
+        <!-- Avatar 1 -->
+        <div class="card blue">
+          <div class="card-header">
+            <div class="card-icon">👨‍💼</div>
+            <div>
+              <div class="card-title">Lead Tech Interviewer</div>
+              <div class="card-sub">Asset: /model.glb</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li><strong>Persona:</strong> Senior Engineering Hiring Lead; structured, confident, and direct.</li>
+            <li><strong>Voice Tuning:</strong> Deep Baritone Male (Pitch: 0.96, Rate: 0.93) matching US/GB profiles (Guy, David).</li>
+            <li><strong>Rigging:</strong> Upper-body skeletal bones (neck, spine, right arm, forearm, hand).</li>
+            <li><strong>Kinematics:</strong> Smooth inverse-lerp greeting wave and jaw bone syllable tracking.</li>
+          </ul>
+          <button class="btn-voice-test" onclick="speakDemo('Lead Tech', 'Hello, I am your lead interviewer. We are ready to get started whenever you are.', 0.96, 0.93, 'male', ['en-US', 'en-GB'], ['Guy', 'David'])">
+            🔊 Test Lead Tech Voice
+          </button>
+        </div>
+
+        <!-- Avatar 2 -->
+        <div class="card purple">
+          <div class="card-header">
+            <div class="card-icon">👩‍💻</div>
+            <div>
+              <div class="card-title">Facial Specialist</div>
+              <div class="card-sub">Asset: /facial_animation.glb</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li><strong>Persona:</strong> Behavioral & Technical Specialist; empathetic, approachable, and encouraging.</li>
+            <li><strong>Voice Tuning:</strong> Melodic Female (Pitch: 1.18, Rate: 0.97) matching natural voices (Samantha, Jenny).</li>
+            <li><strong>Blendshapes:</strong> 52+ ARKit facial morph targets driving high-fidelity micro-expressions.</li>
+            <li><strong>Spatial Offset:</strong> Calibrated matrix offset [0.22, -0.90, -1.3] and scale 1.79 for desk seating.</li>
+          </ul>
+          <button class="btn-voice-test" onclick="speakDemo('Facial Specialist', 'Hi there! I will be conducting your interview today. Feel free to answer at your own pace.', 1.18, 0.97, 'female', ['en-US', 'en-GB'], ['Samantha', 'Jenny', 'Zira'])">
+            🔊 Test Specialist Voice
+          </button>
+        </div>
+
+        <!-- Avatar 3 -->
+        <div class="card cyan">
+          <div class="card-header">
+            <div class="card-icon">👓</div>
+            <div>
+              <div class="card-title">Sundar Pichai 3D Avatar</div>
+              <div class="card-sub">Asset: /animated_google_ceo_sundar_pichai_avatar.glb</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li><strong>Persona:</strong> Executive Tech Leader; calm, thoughtful, philosophical, and visionary.</li>
+            <li><strong>Voice Tuning:</strong> Measured Indian-English cadence (Pitch: 0.85, Rate: 0.88) with en-IN matching.</li>
+            <li><strong>Stabilized Root Bones:</strong> Full-body displacement tracks isolated to maintain rock-solid desk posture.</li>
+            <li><strong>Dampened Nodding:</strong> Scaled nod cadence (0.018 rad) reflecting calm executive presence.</li>
+          </ul>
+          <button class="btn-voice-test" onclick="speakDemo('Sundar Pichai', 'Hello, wonderful to connect with you. I look forward to learning all about your technical experiences.', 0.85, 0.88, 'male', ['en-IN', 'en-GB'], ['Ravi', 'Heera', 'David'])">
+            🔊 Test Sundar Voice
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 -->
+    <div class="slide" data-notes="Here is the detailed comparative specification matrix showing GLB file sizes, transform offsets, morph targets, and voice parameters for each 3D model.">
+      <div class="slide-tag">// SPECIFICATIONS MATRIX</div>
+      <h1 class="slide-title">📊 3D Interviewer Technical Comparison</h1>
+      <p class="slide-subtitle">Granular transform matrices, mesh geometry, blendshapes, and audio synthesis profiles.</p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Specification</th>
+            <th>Original Lead Tech</th>
+            <th>Facial Animation Specialist</th>
+            <th>Sundar Pichai Avatar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color: #38bdf8; font-weight: 700;">GLB Asset Size</td>
+            <td>3.9 MB (Optimized GLB)</td>
+            <td>20.7 MB (High-res blendshapes)</td>
+            <td>4.8 MB (Photogrammetry model)</td>
+          </tr>
+          <tr>
+            <td style="color: #38bdf8; font-weight: 700;">Scale & Offset</td>
+            <td>Scale: 1.2 | Offset: [0, 0, 0]</td>
+            <td>Scale: 1.79 | Offset: [0.22, -0.9, -1.3]</td>
+            <td>Scale: 0.6 | Offset: [0, 0, 0]</td>
+          </tr>
+          <tr>
+            <td style="color: #38bdf8; font-weight: 700;">Deformation Method</td>
+            <td>Skeletal Bones (Jaw, Eyelids, Arms)</td>
+            <td>52+ ARKit Viseme Morph Targets</td>
+            <td>Bone hierarchy + Shape keys</td>
+          </tr>
+          <tr>
+            <td style="color: #38bdf8; font-weight: 700;">Action Track Handling</td>
+            <td>Fades in on speech, stops on idle</td>
+            <td>Full-body clips disabled (avoids drift)</td>
+            <td>Full-body tracks stopped (desk stability)</td>
+          </tr>
+          <tr>
+            <td style="color: #38bdf8; font-weight: 700;">TTS Pitch & Rate</td>
+            <td>Pitch: 0.96 | Rate: 0.93 (Authoritative)</td>
+            <td>Pitch: 1.18 | Rate: 0.97 (Expressive)</td>
+            <td>Pitch: 0.85 | Rate: 0.88 (Calm)</td>
+          </tr>
+          <tr>
+            <td style="color: #38bdf8; font-weight: 700;">Target Accents</td>
+            <td>en-US, en-GB (Guy, David, George)</td>
+            <td>en-US, en-GB (Samantha, Jenny, Zira)</td>
+            <td>en-IN, en-GB, en-US (Ravi, Heera)</td>
+          </tr>
+          <tr>
+            <td style="color: #38bdf8; font-weight: 700;">Conversational Nod</td>
+            <td>Cadence amplitude: 0.03 rad</td>
+            <td>Cadence amplitude: 0.03 rad</td>
+            <td>Dampened amplitude: 0.018 rad</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SLIDE 5 -->
+    <div class="slide" data-notes="Procedural lip-sync runs right inside requestAnimationFrame. By modulating mathematical functions across syllable frequencies, we generate phonemes for vowels and consonants with zero server audio latency.">
+      <div class="slide-tag">// 3D RIGGING & KINEMATICS</div>
+      <h1 class="slide-title">📐 Procedural Lip-Sync & Biomechanical Kinematics</h1>
+      <p class="slide-subtitle">Trigonometric phonetic simulation, stochastic eye-blinking, and inverse arm kinematics.</p>
+      
+      <div class="grid-2">
+        <div class="card blue">
+          <div class="card-header">
+            <div class="card-icon">👄</div>
+            <div>
+              <div class="card-title">Procedural Viseme Algorithm</div>
+              <div class="card-sub">Mathematical phonetic driver</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li>
+              <strong>Syllable Modulator:</strong>
+              <div style="background: rgba(15, 23, 42, 0.8); padding: 8px 12px; border-radius: 8px; margin: 4px 0;">
+                <code>S(t) = |sin(25t) · cos(20t)| · 0.8 + 0.2</code>
+              </div>
+            </li>
+            <li>
+              <strong>Multi-Viseme Target Driver:</strong>
+              <div>• <code>viseme_aa</code> = max(0, sin(6.2t)) · S(t) (Open /a/)</div>
+              <div>• <code>viseme_ee</code> = max(0, sin(6.2t + 2.0)) · S(t) · 0.8 (/i/ & /e/)</div>
+              <div>• <code>viseme_oo</code> = max(0, sin(6.2t + 4.0)) · S(t) · 0.75 (Pursed /u/)</div>
+              <div>• <code>viseme_mbp</code> = max(0, sin(9.5t + 1.2)) · 0.7 (Plosives M, B, P)</div>
+            </li>
+            <li><strong>Simultaneous Bone Lerp:</strong> Modulates jaw bone rotation (alpha: 0.5) to provide depth on both bone-driven and morph-driven avatars.</li>
+          </ul>
+        </div>
+
+        <div class="card purple">
+          <div class="card-header">
+            <div class="card-icon">👁️</div>
+            <div>
+              <div class="card-title">Gaze, Blinking & Gestures</div>
+              <div class="card-sub">Natural non-verbal simulation</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li><strong>Stochastic Blinking:</strong> Countdown timer (2.5s to 6.0s). When timer &lt; 120ms, eyelid bones rotate +0.35 rad and morphTarget 'blink' lerps with alpha 0.6.</li>
+            <li><strong>Eye Contact & Saccades:</strong> 85% probability lock on camera center (0, 0); 15% subtle micro-saccades (±0.07 rad) to eliminate robotic staring.</li>
+            <li><strong>Conversational Head Nod:</strong> Neck pitch lerps to <code>talkTilt + sin(4.2t)·0.03 + gaze.y</code>; spine breathing sways at <code>sin(2.0t)·0.012 rad</code>.</li>
+            <li><strong>Greeting Kinematics:</strong> Smooth inverse-lerp waving animation between calibrated <code>IDLE_POSE</code> and <code>WAVE_POSE</code> with sine oscillation (<code>sin(3.4t)·0.22</code>).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6 -->
+    <div class="slide" data-notes="Our speech pipeline supports full-duplex verbal dialogue. The avatar speaks questions aloud with tailored pitch and rate, while the candidate speaks their answers with continuous real-time Speech-to-Text streaming.">
+      <div class="slide-tag">// VOICE INTELLIGENCE</div>
+      <h1 class="slide-title">🗣️ Real-Time Voice Synthesis & Speech-to-Text</h1>
+      <p class="slide-subtitle">Heuristic multi-accent TTS matching and continuous Web Speech API transcription.</p>
+      
+      <div class="grid-2">
+        <div class="card cyan">
+          <div class="card-header">
+            <div class="card-icon">🔊</div>
+            <div>
+              <div class="card-title">Text-to-Speech (TTS) Architecture</div>
+              <div class="card-sub">Persona-Driven Heuristic Matcher</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li><strong>4-Tier Heuristic Matcher:</strong> (1) Language locale tag (en-IN, en-GB, en-US), (2) Keyword pool ('Guy', 'David', 'Samantha', 'Ravi', 'Google'), (3) Regex gender filters (/male/ vs /female/), (4) Fallback candidate pool.</li>
+            <li><strong>Speech Lifecycle Hooks:</strong> Hooks into <code>onstart</code>, <code>onend</code>, and <code>onerror</code> to actuate 3D mouth lip-sync, waving gestures, and HUD live wave bars.</li>
+            <li><strong>Universal OS Support:</strong> Seamless operation across Windows, macOS, ChromeOS, and Linux.</li>
+          </ul>
+        </div>
+
+        <div class="card gold">
+          <div class="card-header">
+            <div class="card-icon">🎙️</div>
+            <div>
+              <div class="card-title">Speech-to-Text (STT) Transcription</div>
+              <div class="card-sub">Continuous Real-Time Streaming</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li><strong>Continuous Audio Streaming:</strong> Web Speech API <code>SpeechRecognition</code> with <code>interimResults=true</code> shows live words on screen as the candidate speaks.</li>
+            <li><strong>Non-Destructive Text Buffer:</strong> <code>startingTextRef</code> buffers existing text so candidates can combine speaking and manual typing seamlessly.</li>
+            <li><strong>Proactive Permission Handling:</strong> Explicit <code>navigator.mediaDevices.getUserMedia</code> check with clear toasts if mic is blocked.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7 -->
+    <div class="slide" data-notes="Questions are never generic. Our backend extracts text from PDF and DOCX resumes, combines it with the job description, and routes it through a 6-tier LLM failover gateway to synthesize 15 grounded questions with ideal model answers.">
+      <div class="slide-tag">// AI QUESTION INTELLIGENCE</div>
+      <h1 class="slide-title">📄 Dynamic Question Generation & Resume Ingestion</h1>
+      <p class="slide-subtitle">Document parsing and 6-tier Multi-LLM failover cascade via OpenRouter.</p>
+      
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">📑</div>
+            <div>
+              <div class="card-title">1. Document Parsing</div>
+              <div class="card-sub">PDF & DOCX Extraction</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li>Ingests up to 30,000 characters using <code>pypdf</code> and <code>python-docx</code>.</li>
+            <li>Extracts candidate tech stack, architectural milestones, and tenure history.</li>
+            <li>Cleans whitespace and eliminates layout noise.</li>
+          </ul>
+        </div>
+
+        <div class="card purple">
+          <div class="card-header">
+            <div class="card-icon">⚡</div>
+            <div>
+              <div class="card-title">2. Multi-LLM Cascade</div>
+              <div class="card-sub">OpenRouter Gateway</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li>Automatic sequential failover across 6 models:
+              <div style="margin-top: 6px; font-size: 11px; color: #a5b4fc;">
+                1. GPT-4o-mini<br>
+                2. Gemini 2.0 Flash<br>
+                3. Claude 3.5 Haiku<br>
+                4. Llama 3.3 70B<br>
+                5. Mistral Small & Qwen 2.5
+              </div>
+            </li>
+            <li>Guarantees zero downtime during API outages.</li>
+          </ul>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-header">
+            <div class="card-icon">🎯</div>
+            <div>
+              <div class="card-title">3. Structured JSON</div>
+              <div class="card-sub">15 Technical Questions</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li>Enforces strict JSON schema with exactly 15 questions.</li>
+            <li>Synthesizes fact-grounded <strong>ideal_answer</strong> model response.</li>
+            <li>Defines <strong>evaluation_points</strong> covering correctness and edge cases.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8 -->
+    <div class="slide" data-notes="Virtual Interview Pro is also a powerful enterprise tool. Recruiters can create custom interview rooms, send links to candidates, and watch their dashboard update every 8 seconds with scores, remarks, and 1-click CSV export.">
+      <div class="slide-tag">// ENTERPRISE HIRING STUDIO</div>
+      <h1 class="slide-title">🏢 Custom Hosted Interview Studio & Live Telemetry</h1>
+      <p class="slide-subtitle">Build custom screening rooms, distribute token links, and monitor live attempts.</p>
+      
+      <div class="grid-2">
+        <div class="card blue">
+          <div class="card-header">
+            <div class="card-icon">🛠️</div>
+            <div>
+              <div class="card-title">Recruiter Studio Creator (/create-interview)</div>
+              <div class="card-sub">Custom Pipeline Configuration</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li><strong>Flexible Session Duration:</strong> Configurable presets (15, 30, 45, 60 minutes) or custom limits (5 to 180 min).</li>
+            <li><strong>Interactive Question Builder:</strong> Add, edit, or reorder questions with 1-click starter templates (architecture, debugging, team trade-offs).</li>
+            <li><strong>Cryptographic Token Generation:</strong> Generates unique public candidate links (<code>/candidate/:token</code>) and private recruiter keys (<code>/manage/:token?owner_key=...</code>).</li>
+          </ul>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-header">
+            <div class="card-icon">📊</div>
+            <div>
+              <div class="card-title">Recruiter Live Telemetry (/manage/:token)</div>
+              <div class="card-sub">Real-Time Hiring Dashboard</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li><strong>8-Second Auto-Polling:</strong> Dashboard updates live as candidates start, answer, and complete sessions.</li>
+            <li><strong>Live Scoring & Remarks:</strong> View candidate scores out of max possible, completion time, and AI remarks.</li>
+            <li><strong>1-Click CSV Export:</strong> Export complete candidate attempt histories, answers, and scores into standard CSV format for ATS import.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9 -->
+    <div class="slide" data-notes="Our evaluation is objective and multi-dimensional. Every answer is scored 0-10 on correctness, relevance, completeness, and clarity. Candidates receive a detailed scorecard with side-by-side ideal answer comparisons.">
+      <div class="slide-tag">// AUTOMATED EVALUATION</div>
+      <h1 class="slide-title">📊 Multi-Vector AI Scoring & Candidate Feedback</h1>
+      <p class="slide-subtitle">Objective 0-10 evaluation rubric rewarding depth and clarity without penalizing conciseness.</p>
+      
+      <div class="grid-4">
+        <div class="card blue">
+          <div class="card-title" style="font-size: 13.5px;">1. Technical Correctness</div>
+          <div style="font-size: 18px; font-weight: 800; color: #818cf8; margin: 4px 0;">0 - 10 Pts</div>
+          <p style="font-size: 11.5px; color: #cbd5e1; line-height: 1.4;">
+            Factual accuracy, algorithmic soundness, memory structures, and industry best practices.
+          </p>
+        </div>
+
+        <div class="card purple">
+          <div class="card-title" style="font-size: 13.5px;">2. Relevance & Focus</div>
+          <div style="font-size: 18px; font-weight: 800; color: #c084fc; margin: 4px 0;">0 - 10 Pts</div>
+          <p style="font-size: 11.5px; color: #cbd5e1; line-height: 1.4;">
+            Directly addressing the problem without wandering, rambling, or providing irrelevant filler.
+          </p>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-title" style="font-size: 13.5px;">3. Completeness</div>
+          <div style="font-size: 18px; font-weight: 800; color: #2dd4bf; margin: 4px 0;">0 - 10 Pts</div>
+          <p style="font-size: 11.5px; color: #cbd5e1; line-height: 1.4;">
+            Addressing edge cases, scalability bottlenecks, failure modes, and architectural trade-offs.
+          </p>
+        </div>
+
+        <div class="card gold">
+          <div class="card-title" style="font-size: 13.5px;">4. Clarity & Delivery</div>
+          <div style="font-size: 18px; font-weight: 800; color: #fbbf24; margin: 4px 0;">0 - 10 Pts</div>
+          <p style="font-size: 11.5px; color: #cbd5e1; line-height: 1.4;">
+            Crisp communication, structured explanations, and clear technical terminology.
+          </p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; background: rgba(15, 23, 42, 0.7);">
+        <div class="card-title" style="color: #a5b4fc; margin-bottom: 8px;">
+          📋 Comprehensive Post-Interview Candidate Report
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; font-size: 12.5px; color: #cbd5e1;">
+          <div>• <strong>Cumulative Score:</strong> Total score out of 150 (e.g. 138/150) with overall benchmark percentage.</div>
+          <div>• <strong>Ideal Answer Comparison:</strong> Side-by-side view of candidate answer vs. gold-standard ideal response.</div>
+          <div>• <strong>Actionable Feedback:</strong> Constructive coaching and advice on technical improvements.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10 -->
+    <div class="slide" data-notes="Here is our full architectural stack. The frontend coordinates Three.js, React Three Fiber, and OGL fluid shaders. The backend is built in Django REST Framework, handling resume parsing, relational attempt tracking, and multi-LLM proxying.">
+      <div class="slide-tag">// SYSTEM ARCHITECTURE</div>
+      <h1 class="slide-title">🏗️ Full-Stack Technology Architecture</h1>
+      <p class="slide-subtitle">High-performance client rendering, robust REST backend, and multi-model AI routing.</p>
+      
+      <div class="grid-3">
+        <div class="card blue">
+          <div class="card-header">
+            <div class="card-icon">💻</div>
+            <div>
+              <div class="card-title">Frontend Architecture</div>
+              <div class="card-sub">React 18 + Vite + Three.js</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li><strong>Three.js & R3F:</strong> Hardware-accelerated 3D canvas rendering avatars, obsidian desks, laptops, and studio lighting.</li>
+            <li><strong>MicroSlats WebGL Shader:</strong> Interactive fluid wave shader powered by OGL for dynamic cosmic backdrops.</li>
+            <li><strong>Web Speech API:</strong> Native browser SpeechRecognition (STT) and SpeechSynthesis (TTS).</li>
+            <li><strong>Cyber-Glass Design:</strong> CSS glassmorphism, responsive HUD overlays, and Lucide icons.</li>
+          </ul>
+        </div>
+
+        <div class="card purple">
+          <div class="card-header">
+            <div class="card-icon">⚙️</div>
+            <div>
+              <div class="card-title">Backend Architecture</div>
+              <div class="card-sub">Django REST Framework</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li><strong>REST API Endpoints:</strong> Question generation, interview submission, and telemetry dashboard.</li>
+            <li><strong>Document Text Extraction:</strong> Multi-page PDF text extraction via <code>pypdf</code> and DOCX via <code>python-docx</code>.</li>
+            <li><strong>Relational Data Model:</strong> <code>HostedInterview</code> and <code>CandidateAttempt</code> models with UUID tokens.</li>
+            <li><strong>CSV Serialization:</strong> Instant dynamic CSV generation for ATS integration.</li>
+          </ul>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-header">
+            <div class="card-icon">🧠</div>
+            <div>
+              <div class="card-title">AI & Gateway Layer</div>
+              <div class="card-sub">OpenRouter Multi-LLM</div>
+            </div>
+          </div>
+          <ul class="list">
+            <li><strong>6-Tier Redundancy:</strong> GPT-4o-mini, Gemini 2.0 Flash, Claude 3.5 Haiku, Llama 3.3 70B, Mistral, Qwen.</li>
+            <li><strong>Structured JSON Output:</strong> Enforces deterministic schema validation for questions and grading.</li>
+            <li><strong>Few-Shot Prompt Engineering:</strong> Grounds evaluation strictly against factual technical criteria.</li>
+            <li><strong>Fault-Tolerant Retries:</strong> Automatic backoff and timeout handling.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide" data-notes="This matrix proves feature parity and customized workflows between Candidate Practice Mode and Enterprise Recruiter Studio Mode.">
+      <div class="slide-tag">// FEATURE MATRIX</div>
+      <h1 class="slide-title">📋 Feature Matrix & Capability Comparison</h1>
+      <p class="slide-subtitle">Comprehensive overview of capabilities across Candidate Practice and Recruiter Studio modes.</p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Feature Capability</th>
+            <th>Candidate Practice Mode (/interview)</th>
+            <th>Enterprise Recruiter Studio (/candidate)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color: #38bdf8; font-weight: 700;">3D Avatar Selection</td>
+            <td>✓ All 3 Avatars (Lead Tech, Facial, Sundar Pichai)</td>
+            <td>✓ All 3 Avatars (Candidate or Recruiter selection)</td>
+          </tr>
+          <tr>
+            <td style="color: #38bdf8; font-weight: 700;">Question Sourcing</td>
+            <td>Auto-synthesized from uploaded Resume & Job Description</td>
+            <td>Custom recruiter question builder with starter templates</td>
+          </tr>
+          <tr>
+            <td style="color: #38bdf8; font-weight: 700;">Procedural Lip-Sync</td>
+            <td>✓ Active (Trigonometric viseme deformation)</td>
+            <td>✓ Active (Trigonometric viseme deformation)</td>
+          </tr>
+          <tr>
+            <td style="color: #38bdf8; font-weight: 700;">Voice Speech-to-Text</td>
+            <td>✓ Real-Time (Web Speech continuous listening)</td>
+            <td>✓ Real-Time (Candidate verbal dictation recorded)</td>
+          </tr>
+          <tr>
+            <td style="color: #38bdf8; font-weight: 700;">Automated AI Evaluation</td>
+            <td>Instant candidate scorecard with ideal answers</td>
+            <td>Evaluated & scored directly into recruiter dashboard</td>
+          </tr>
+          <tr>
+            <td style="color: #38bdf8; font-weight: 700;">Session Management</td>
+            <td>Personal interactive self-paced practice</td>
+            <td>Cryptographic token links & 8-second live polling</td>
+          </tr>
+          <tr>
+            <td style="color: #38bdf8; font-weight: 700;">Export Capabilities</td>
+            <td>On-screen review & question-by-question breakdown</td>
+            <td>1-Click CSV Export with scores and remarks</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SLIDE 12 -->
+    <div class="slide" data-notes="Thank you for your time! We invite you to experience Virtual Interview Pro live. We welcome any questions, feedback, and discussion.">
+      <div class="slide-tag">// LIVE DEMONSTRATION</div>
+      <h1 class="slide-title">🚀 Experience the Platform Live</h1>
+      <p class="slide-subtitle">Ready to step into the future of technical interview screening?</p>
+      
+      <div class="grid-3" style="margin-top: 16px;">
+        <div class="card blue" style="text-align: center; padding: 24px;">
+          <div style="font-size: 32px; margin-bottom: 10px;">🎯</div>
+          <div style="font-size: 16px; font-weight: 700; color: #ffffff;">Practice AI Interview</div>
+          <div style="font-size: 12px; color: var(--muted); margin: 8px 0 16px;">
+            Upload your resume, enter a job description, and interview face-to-face with the 3D avatar.
+          </div>
+          <div style="font-size: 12px; font-weight: 700; color: #a5b4fc;">Route: /interview</div>
+        </div>
+
+        <div class="card cyan" style="text-align: center; padding: 24px;">
+          <div style="font-size: 32px; margin-bottom: 10px;">🏢</div>
+          <div style="font-size: 16px; font-weight: 700; color: #ffffff;">Recruiter Studio</div>
+          <div style="font-size: 12px; color: var(--muted); margin: 8px 0 16px;">
+            Create custom interview sessions, configure time limits, and generate shareable candidate links.
+          </div>
+          <div style="font-size: 12px; font-weight: 700; color: #5eead4;">Route: /create-interview</div>
+        </div>
+
+        <div class="card purple" style="text-align: center; padding: 24px;">
+          <div style="font-size: 32px; margin-bottom: 10px;">📥</div>
+          <div style="font-size: 16px; font-weight: 700; color: #ffffff;">Download PowerPoint</div>
+          <div style="font-size: 12px; color: var(--muted); margin: 8px 0 16px;">
+            Download the executive 12-slide 16:9 .pptx presentation file for PowerPoint or Keynote.
+          </div>
+          <a href="Virtual_Interview_Pro_Presentation.pptx" download="Virtual_Interview_Pro_Presentation.pptx" style="font-size: 12px; font-weight: 700; color: #d8b4fe; text-decoration: none;">
+            Download Deck ▹
+          </a>
+        </div>
+      </div>
+
+      <div style="margin-top: 28px; text-align: center; font-size: 14px; color: #cbd5e1;">
+        Thank you! Open for Questions & Interactive Demonstration.
+      </div>
+    </div>
+  </main>
+
+  <!-- Speaker Notes Drawer -->
+  <div id="notes-drawer">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+      <span style="font-size: 11px; font-weight: 700; color: #818cf8; text-transform: uppercase;">🎙️ Presenter Script & Speaker Notes</span>
+      <button onclick="toggleNotes()" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 14px;">✕</button>
+    </div>
+    <div id="notes-content" style="font-size: 13.5px; color: #cbd5e1; line-height: 1.6;"></div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <footer>
+    <div class="slide-counter">
+      Slide <strong id="current-slide-num">1</strong> of <span id="total-slides-num">12</span>
+    </div>
+
+    <div class="nav-arrows">
+      <button class="nav-arrow" id="btn-prev" onclick="changeSlide(-1)">❮</button>
+      <button class="nav-arrow" id="btn-next" onclick="changeSlide(1)">❯</button>
+    </div>
+
+    <div class="hint">
+      <span>Navigate with</span>
+      <span class="key">←</span>
+      <span class="key">→</span>
+      <span class="key">Space</span>
+      <span>• Fullscreen</span>
+      <span class="key">F</span>
+      <span>• Notes</span>
+      <span class="key">N</span>
+    </div>
+  </footer>
+
+  <!-- Overview Modal -->
+  <div id="overview-modal" onclick="toggleOverview()">
+    <div style="display: flex; justify-content: space-between; align-items: center;" onclick="event.stopPropagation()">
+      <h2 style="font-size: 20px; font-weight: 800; color: #ffffff;">Slide Grid Overview</h2>
+      <button class="btn-icon" onclick="toggleOverview()">✕ Close</button>
+    </div>
+    <div class="overview-grid" id="overview-grid" onclick="event.stopPropagation()"></div>
+  </div>
+
+  <script>
+    let currentIdx = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let autoPlayTimer = null;
+
+    document.getElementById('total-slides-num').innerText = totalSlides;
+
+    function updateSlide() {
+      slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === currentIdx);
+      });
+
+      document.getElementById('current-slide-num').innerText = currentIdx + 1;
+      document.getElementById('progress-line').style.width = (((currentIdx + 1) / totalSlides) * 100) + '%';
+      document.getElementById('btn-prev').disabled = (currentIdx === 0);
+      document.getElementById('btn-next').disabled = (currentIdx === totalSlides - 1);
+
+      const notes = slides[currentIdx].getAttribute('data-notes') || 'No notes for this slide.';
+      document.getElementById('notes-content').innerText = notes;
+    }
+
+    function changeSlide(direction) {
+      currentIdx = Math.max(0, Math.min(totalSlides - 1, currentIdx + direction));
+      updateSlide();
+    }
+
+    function jumpToSlide(idx) {
+      currentIdx = idx;
+      updateSlide();
+      document.getElementById('overview-modal').classList.remove('open');
+    }
+
+    function toggleAutoPlay() {
+      const btn = document.getElementById('btn-play');
+      if (autoPlayTimer) {
+        clearInterval(autoPlayTimer);
+        autoPlayTimer = null;
+        btn.innerText = '▶ Auto-Play';
+        btn.classList.remove('active');
+      } else {
+        btn.innerText = '⏸ Pause';
+        btn.classList.add('active');
+        autoPlayTimer = setInterval(() => {
+          if (currentIdx >= totalSlides - 1) {
+            toggleAutoPlay();
+          } else {
+            changeSlide(1);
+          }
+        }, 8000);
+      }
+    }
+
+    function toggleNotes() {
+      const drawer = document.getElementById('notes-drawer');
+      drawer.classList.toggle('open');
+      document.getElementById('btn-notes').classList.toggle('active', drawer.classList.contains('open'));
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function toggleOverview() {
+      const modal = document.getElementById('overview-modal');
+      modal.classList.toggle('open');
+      if (modal.classList.contains('open')) {
+        renderOverviewGrid();
+      }
+    }
+
+    function renderOverviewGrid() {
+      const grid = document.getElementById('overview-grid');
+      grid.innerHTML = '';
+      slides.forEach((s, idx) => {
+        const title = s.querySelector('.slide-title')?.innerText || `Slide ${idx + 1}`;
+        const tag = s.querySelector('.slide-tag')?.innerText || '';
+        const card = document.createElement('div');
+        card.className = `thumb-card ${idx === currentIdx ? 'active' : ''}`;
+        card.innerHTML = `
+          <div>
+            <div style="font-size: 11px; font-weight: 700; color: #818cf8;">SLIDE ${idx + 1}</div>
+            <div style="font-size: 13px; font-weight: 700; color: #ffffff; margin-top: 4px;">${title}</div>
+          </div>
+          <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">${tag}</div>
+        `;
+        card.onclick = () => jumpToSlide(idx);
+        grid.appendChild(card);
+      });
+    }
+
+    // Voice testing helper using Web Speech API
+    function speakDemo(label, text, pitch, rate, gender, langCodes, keywords) {
+      if (!('speechSynthesis' in window)) {
+        alert('Web Speech API is not supported in this browser.');
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.pitch = pitch;
+      utterance.rate = rate;
+
+      const voices = window.speechSynthesis.getVoices();
+      let matchedVoice = null;
+
+      // Match language
+      if (langCodes && langCodes.length > 0) {
+        for (const code of langCodes) {
+          matchedVoice = voices.find(v => v.lang.toLowerCase().includes(code.toLowerCase()));
+          if (matchedVoice) break;
+        }
+      }
+
+      // Match keywords
+      if (!matchedVoice && keywords && keywords.length > 0) {
+        for (const kw of keywords) {
+          matchedVoice = voices.find(v => v.name.toLowerCase().includes(kw.toLowerCase()));
+          if (matchedVoice) break;
+        }
+      }
+
+      // Match gender fallback
+      if (!matchedVoice) {
+        if (gender === 'female') {
+          matchedVoice = voices.find(v => /female|woman|zira|samantha|jenny|victoria/i.test(v.name));
+        } else {
+          matchedVoice = voices.find(v => /male|man|david|guy|daniel|george/i.test(v.name));
+        }
+      }
+
+      if (matchedVoice) utterance.voice = matchedVoice;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Preload speech synthesis voices
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+        e.preventDefault();
+        changeSlide(1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') {
+        e.preventDefault();
+        changeSlide(-1);
+      } else if (e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        toggleFullscreen();
+      } else if (e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        toggleNotes();
+      } else if (e.key.toLowerCase() === 'o') {
+        e.preventDefault();
+        toggleOverview();
+      } else if (e.key === 'Escape') {
+        document.getElementById('overview-modal').classList.remove('open');
+        document.getElementById('notes-drawer').classList.remove('open');
+      }
+    });
+
+    updateSlide();
+  </script>
+</body>
+</html>
